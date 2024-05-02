@@ -1,5 +1,6 @@
 # pylint: disable=invalid-name
 
+from re import DEBUG
 import pytest
 
 
@@ -457,6 +458,15 @@ def test_attributes_to_search_on_search_no_match(index_with_documents):
         "How to Train Your Dragon", opt_params={"attributesToSearchOn": ["id"]}
     )
     assert response["hits"] == []
+
+def test_attribute_to_show_ranking_score_details(index_with_documents):
+    response = index_with_documents().search(
+        "dragon", opt_params={"showRankingScoreDetails": True }
+    )
+
+    assert isinstance(response, dict)
+    assert "_rankingScoreDetails" in response["hits"][0]
+    assert response['hits'][0]["_rankingScoreDetails"].keys() == ("words", "typo", "name:asc")
 
 
 @pytest.mark.usefixtures("enable_vector_search")
